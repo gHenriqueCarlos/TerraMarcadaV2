@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Maui.GoogleMaps;assembly=Maui.GoogleMaps"
+             x:Class="TerraMarcadaV2.MainPage"
+             Title="TerraMarcadaV2">
+    <Grid>
+        <!-- MAPA -->
+        <maps:Map x:Name="map" MapType="Satellite"/>
+
+        <!-- Botão flutuante para abrir/fechar o painel -->
+        <Grid HorizontalOptions="End"
+              VerticalOptions="Start"
+              Margin="12"
+              RowDefinitions="Auto,Auto">
+            <Button x:Name="btnTogglePanel"
+                    Text="☰"
+                    WidthRequest="48"
+                    HeightRequest="48"
+                    CornerRadius="24"
+                    BackgroundColor="#CC222222"
+                    TextColor="White"
+                    Clicked="OnTogglePanelClicked" />
+            <!-- Painel -->
+            <Border x:Name="ToolPanel"
+                    Grid.Row="1"
+                    IsVisible="False"
+                    BackgroundColor="#CC1E1E1E"
+                    Stroke="#40FFFFFF"
+                    StrokeShape="RoundRectangle 16"
+                    Padding="10"
+                    Margin="0,8,0,0">
+                <ScrollView>
+                    <VerticalStackLayout Spacing="8">
+                        <!-- ==== CRIAÇÃO (Botão 'Criar' para abrir as opções) ==== -->
+                        <Label Text="Criar"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+                        <Button Text="Criar"
+                                Clicked="OnCreateClicked"
+                                BackgroundColor="#2e7d32"
+                                TextColor="White" />
+
+                        <!-- Opções de Criação (sub-menu) -->
+                        <StackLayout x:Name="CreationOptions"
+                                     IsVisible="False">
+                            <Grid ColumnDefinitions="*,*, *"
+                                  ColumnSpacing="8">
+                                <Button Text="Ponto"
+                                        Clicked="OnCreatePointClicked"
+                                        BackgroundColor="#2e7d32"
+                                        TextColor="White" />
+                                <Button Text="Ponto(10s)"
+                                        Grid.Column="1"
+                                        Clicked="OnCreatePointTimedClicked"
+                                        BackgroundColor="YellowGreen"
+                                        TextColor="White" />
+                                <Button Text="Linha"
+                                        Grid.Column="2"
+                                        Clicked="OnCreatePolylineClicked"
+                                        BackgroundColor="#1565c0"
+                                        TextColor="White" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="8">
+                                <Button Text="Polígono"
+                                        Clicked="OnCreatePolygonClicked"
+                                        BackgroundColor="#6a1b9a"
+                                        TextColor="White" />
+                                <Button Text="Buraco"
+                                        Grid.Column="1"
+                                        Clicked="OnCreateHoleClicked"
+                                        BackgroundColor="#ad1457"
+                                        TextColor="White" />
+                            </Grid>
+
+                            <Button Text="Círculo (2 toques)"
+                                    Clicked="OnCreateCircleClicked"
+                                    BackgroundColor="#00897b"
+                                    TextColor="White" />
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="8"
+                                  VerticalOptions="Center">
+                                <Label Text="Snap vértices:"
+                                       TextColor="White"
+                                       VerticalOptions="Center" />
+                                <Switch x:Name="swSnap"
+                                        Toggled="OnSnapToggled"
+                                        Grid.Column="1" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="8">
+                                <Button Text="Desfazer"
+                                        Clicked="OnCreateUndoClicked"
+                                        BackgroundColor="#795548"
+                                        TextColor="White" />
+                                <Button Text="Concluir"
+                                        Grid.Column="1"
+                                        Clicked="OnCreateFinishClicked"
+                                        BackgroundColor="#b71c1c"
+                                        TextColor="White" />
+                            </Grid>
+
+                            <Button Text="Cancelar criação"
+                                    Clicked="OnCreateCancelClicked"
+                                    BackgroundColor="#424242"
+                                    TextColor="White" />
+                        </StackLayout>
+
+                        <!-- ==== EDIÇÃO (Botão 'Editar' para abrir as opções) ==== -->
+                        <Label Text="Editar"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+                        <Button Text="Editar"
+                                Clicked="OnEditClicked"
+                                BackgroundColor="#ad1457"
+                                TextColor="White" />
+
+                        <!-- Opções de Edição (sub-menu) -->
+                        <StackLayout x:Name="EditOptions"
+                                     IsVisible="False">
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="8">
+                                <Button Text="Selecionar polígono"
+                                        Clicked="OnSelectPolygonClicked"
+                                        BackgroundColor="#2e7d32"
+                                        TextColor="White" />
+                                <Button Text="Selecionar polilinha"
+                                        Clicked="OnSelectPolylineClicked"
+                                        Grid.Column="1"
+                                        BackgroundColor="#1565c0"
+                                        TextColor="White" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="8">
+                                <Button Text="Editar selecionado"
+                                        Clicked="OnEditSelectedClicked"
+                                        BackgroundColor="#6a1b9a"
+                                        TextColor="White" />
+                                <Button Text="Editar buraco"
+                                        Clicked="OnEditHoleClicked"
+                                        Grid.Column="1"
+                                        BackgroundColor="#ad1457"
+                                        TextColor="White" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="8"
+                                  VerticalOptions="Center">
+                                <Label Text="Inserir vértice:"
+                                       TextColor="White"
+                                       VerticalOptions="Center" />
+                                <Switch x:Name="swInsert"
+                                        Toggled="OnInsertToggled"
+                                        Grid.Column="1" />
+                            </Grid>
+
+                            <Button Text="Concluir edição"
+                                    Clicked="OnFinishEditingClicked"
+                                    BackgroundColor="#b71c1c"
+                                    TextColor="White" />
+
+                            <Button Text="Excluir"
+                                    Clicked="OnDeleteSelectedClicked"
+                                    BackgroundColor="#b71c1c"
+                                    TextColor="White" />
+                        </StackLayout>
+
+                        <Label Text="Elementos do Mapa"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+
+                        <Button Text="Mostrar Elementos"
+                                Clicked="OnShowElementsClicked"
+                                BackgroundColor="#2e7d32"
+                                TextColor="White" />
+
+                        <!-- Lista de elementos do mapa (inicialmente oculta) -->
+                        <StackLayout x:Name="MapElementsList"
+                                     IsVisible="False">
+                            <Label Text="Selecione um elemento para ir até ele"
+                                   TextColor="White" />
+
+                            <!-- Lista de itens (Pins, Polígonos, etc.) -->
+                            <ListView x:Name="MapElementsListView"
+                                      ItemSelected="OnElementSelected">
+                                <!-- Defina o ItemTemplate conforme os dados que você quer exibir -->
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell>
+                                            <StackLayout Padding="10">
+                                                <Label Text="{Binding Name}"
+                                                       TextColor="White" />
+                                            </StackLayout>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                        </StackLayout>
+
+
+                        <!-- Outras opções -->
+                        <Label x:Name="lblStatus"
+                               Text="Pronto."
+                               TextColor="White"
+                               FontSize="12"/>
+
+                        <Label Text="Dados"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="8">
+                            <Button Text="Importar KML"
+                                    Clicked="OnImportKMLClicked"
+                                    BackgroundColor="#2e7d32"
+                                    TextColor="White" />
+                            <Button Text="Configurações"
+                                    Grid.Column="1"
+                                    Clicked="OnConfigClicked"
+                                    BackgroundColor="#2e7d32"
+                                    TextColor="White" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </Grid>
+
+        <Label Text="Testando"
+               VerticalOptions="End"
+               HorizontalOptions="Center"
+               Padding="20"
+               TextColor="Black"
+               x:Name="lblStatus2"/>
+
+    </Grid>
+</ContentPage>
