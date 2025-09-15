@@ -1,3 +1,0 @@
-C:\Users\CARLO\source\repos\TerraMarcadaV2\bin\Release\net9.0-android\publish\com.chprojects.terramarcada-Signed.aab
-C:\Users\CARLO\source\repos\TerraMarcadaV2\bin\Release\net9.0-android\publish\com.chprojects.terramarcada.aab
-C:\Users\CARLO\source\repos\TerraMarcadaV2\bin\Release\net9.0-android\publish\_Microsoft.Android.Resource.Designer.dll

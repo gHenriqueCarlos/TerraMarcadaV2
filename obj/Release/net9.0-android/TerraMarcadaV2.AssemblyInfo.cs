@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TerraMarcadaV2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.2.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2+4ea3689d2bddea6674aa514465ccc7c5a067ce75")]
 [assembly: System.Reflection.AssemblyProductAttribute("TerraMarcadaV2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TerraMarcadaV2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.2.0.0")]

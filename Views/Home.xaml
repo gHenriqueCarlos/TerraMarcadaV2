@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TerraMarcadaV2.Views.Home"
+             Title=""
+             BackgroundColor="#F0F0F0">
+    <Grid Padding="20">
+        <!-- Título da Tela (comente ou remova para desabilitar) -->
+        <Label Text="Bem-vindo ao Terra Marcada!"
+               FontSize="26"
+               HorizontalOptions="Center"
+               VerticalOptions="Start"
+               TextColor="#333"
+               FontAttributes="Bold"
+               Margin="0,0,0,20" />
+
+        <!-- Grid para os cards (com mais margem superior para descer os cards) -->
+        <Grid RowDefinitions="Auto, Auto, Auto"
+              ColumnDefinitions="*, *"
+              RowSpacing="20"
+              ColumnSpacing="20"
+              Margin="0, 40, 0, 0">
+            <!-- Margem superior para afastar os cards do título -->
+
+            <!-- Card Mapa -->
+            <Border Stroke="#2196F3"
+                   StrokeShape="RoundRectangle 16"
+                   BackgroundColor="White"
+                   Padding="20"
+                   Grid.Row="0" Grid.Column="0">
+                <Border.Shadow>
+                    <Shadow Brush="Black"
+            Offset="0,4"
+            Opacity="0.3"
+            Radius="10" />
+                </Border.Shadow>
+                <StackLayout Spacing="12">
+                    <Image Source="map_icon.png"
+                           HeightRequest="60"
+                           WidthRequest="60"
+                           HorizontalOptions="Center" />
+                    <Label Text="Mapa"
+                           FontSize="20"
+                           HorizontalOptions="Center"
+                           TextColor="#2196F3"
+                           FontAttributes="Bold" />
+                    <Button Text="Abrir"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            CornerRadius="10"
+                            Clicked="OnMapPageClicked" x:Name="MapPageBtn"/>
+                </StackLayout>
+            </Border>
+
+            <!-- Card Coletora GNSS -->
+            <Border Stroke="#4CAF50"
+                   StrokeShape="RoundRectangle 16"
+                   BackgroundColor="White"
+                   Padding="20"
+                   Grid.Row="0" Grid.Column="1">
+                <Border.Shadow>
+                    <Shadow Brush="Black"
+            Offset="0,4"
+            Opacity="0.3"
+            Radius="10" />
+                </Border.Shadow>
+                <StackLayout Spacing="12">
+                    <Image Source="gnss_icon.png"
+                           HeightRequest="60"
+                           WidthRequest="60"
+                           HorizontalOptions="Center" />
+                    <Label Text="Coletora GNSS"
+                           FontSize="20"
+                           HorizontalOptions="Center"
+                           TextColor="#4CAF50"
+                           FontAttributes="Bold" />
+                    <Button Text="Conectar"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="10"
+                            Clicked="OnGNSSPageClicked" x:Name="GnssPageBtn"/>
+                </StackLayout>
+            </Border>
+
+            <!-- Card GeoCamera -->
+            <Border Stroke="#FF9800"
+                   StrokeShape="RoundRectangle 16"
+                   BackgroundColor="White"
+                   Padding="20"
+                   Grid.Row="1" Grid.Column="0">
+                <Border.Shadow>
+                    <Shadow Brush="Black"
+                    Offset="0,4"
+                    Opacity="0.3"
+                    Radius="10" />
+                </Border.Shadow>
+                <StackLayout Spacing="12">
+                    <Image Source="geocamera_icon.png"
+                           HeightRequest="60"
+                           WidthRequest="60"
+                           HorizontalOptions="Center" />
+                    <Label Text="GeoCamera"
+                           FontSize="20"
+                           HorizontalOptions="Center"
+                           TextColor="#FF9800"
+                           FontAttributes="Bold" />
+                    <Button Text="Tirar Foto"
+                            BackgroundColor="#FF9800"
+                            TextColor="White"
+                            CornerRadius="10"
+                            Clicked="OnGeoCameraPageClicked" x:Name="GeoCameraBtn" />
+                </StackLayout>
+            </Border>
+
+            <!-- Card Extra -->
+            <Border Stroke="#FF5722"
+                   StrokeShape="RoundRectangle 16"
+                   BackgroundColor="White"
+                   Padding="20"
+                   Grid.Row="1" Grid.Column="1">
+                <Border.Shadow>
+                    <Shadow Brush="Black"
+                            Offset="0,4"
+                            Opacity="0.3"
+                            Radius="10" />
+                </Border.Shadow> 
+                    <StackLayout Spacing="12">
+                    <Image Source="extra_icon.png"
+                           HeightRequest="60"
+                           WidthRequest="60"
+                           HorizontalOptions="Center" />
+                    <Label Text="Outro"
+                           FontSize="20"
+                           HorizontalOptions="Center"
+                           TextColor="#FF5722"
+                           FontAttributes="Bold" />
+                    <Button Text="Ação"
+                            BackgroundColor="#FF5722"
+                            TextColor="White"
+                            CornerRadius="10"
+                            Clicked="OnExtraPageClicked" />
+                </StackLayout>
+            </Border>
+
+        </Grid>
+
+        <!-- Botão flutuante de navegação 
+        <Button x:Name="btnTogglePanel"
+                Text="☰"
+                WidthRequest="50"
+                HeightRequest="50"
+                CornerRadius="25"
+                BackgroundColor="#CC222222"
+                TextColor="White"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="0, 0, 16, 16"
+                Clicked="OnTogglePanelClicked"
+                FontSize="24" />-->
+    </Grid>
+</ContentPage>

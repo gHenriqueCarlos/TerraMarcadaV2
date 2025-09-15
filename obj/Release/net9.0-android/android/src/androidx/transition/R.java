@@ -13,13 +13,13 @@ public final class R {
 		public static final int parent_matrix = 0x7f080180;
 		public static final int save_non_transition_alpha = 0x7f08019b;
 		public static final int save_overlay_view = 0x7f08019c;
-		public static final int transition_clip = 0x7f080205;
-		public static final int transition_current_scene = 0x7f080206;
-		public static final int transition_image_transform = 0x7f080207;
-		public static final int transition_layout_save = 0x7f080208;
-		public static final int transition_pause_alpha = 0x7f080209;
-		public static final int transition_position = 0x7f08020a;
-		public static final int transition_scene_layoutid_cache = 0x7f08020b;
-		public static final int transition_transform = 0x7f08020c;
+		public static final int transition_clip = 0x7f080207;
+		public static final int transition_current_scene = 0x7f080208;
+		public static final int transition_image_transform = 0x7f080209;
+		public static final int transition_layout_save = 0x7f08020a;
+		public static final int transition_pause_alpha = 0x7f08020b;
+		public static final int transition_position = 0x7f08020c;
+		public static final int transition_scene_layoutid_cache = 0x7f08020d;
+		public static final int transition_transform = 0x7f08020e;
 	}
 }

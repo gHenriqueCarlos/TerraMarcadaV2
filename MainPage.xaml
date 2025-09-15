@@ -2,8 +2,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Maui.GoogleMaps;assembly=Maui.GoogleMaps"
+             xmlns:local="clr-namespace:TerraMarcadaV2.Helpers"
              x:Class="TerraMarcadaV2.MainPage"
              Title="TerraMarcadaV2">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:StringEmptyConverter x:Key="StringEmptyConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <Grid>
         <!-- MAPA -->
         <maps:Map x:Name="map" MapType="Satellite"/>
@@ -206,7 +214,7 @@
 
                         <!-- Outras opções -->
                         <Label x:Name="lblStatus"
-                               Text="Pronto."
+                               Text="{Binding StatusText}"
                                TextColor="White"
                                FontSize="12"/>
 
@@ -231,12 +239,38 @@
             </Border>
         </Grid>
 
-        <Label Text="Testando"
-               VerticalOptions="End"
-               HorizontalOptions="Center"
-               Padding="20"
+
+
+        <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="End" Spacing="10">
+            <!-- Label de Área com borda -->
+            <Border Stroke="Red"
+            BackgroundColor="White"
+            Padding="10"
+            StrokeShape="RoundRectangle 8"
+            HorizontalOptions="Center"
+            VerticalOptions="End" x:Name="BorderLblArea" IsVisible="{Binding StatusSizeText, Converter={StaticResource StringEmptyConverter}}">
+                <Label Text="{Binding StatusSizeText}"
                TextColor="Black"
+               FontSize="Medium"
+               x:Name="lblArea"/>
+            </Border>
+
+            <!-- Label de Status com borda dinâmica -->
+            <Border Stroke="Green"
+            BackgroundColor="White"
+            Padding="10"
+            StrokeShape="RoundRectangle 8"
+            HorizontalOptions="Center"
+            VerticalOptions="End"
+            IsVisible="{Binding StatusText, Converter={StaticResource StringEmptyConverter}}" x:Name="BorderLblStatus2">
+                <Label Text="{Binding StatusText}"
+               TextColor="Black"
+               FontSize="16"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
                x:Name="lblStatus2"/>
+            </Border>
+        </StackLayout>
 
     </Grid>
 </ContentPage>

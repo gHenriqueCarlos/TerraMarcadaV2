@@ -8,6 +8,7 @@ using Microsoft.Maui.Graphics;
 using TerraMarcadaV2.Models;
 using TerraMarcadaV2.ViewModels;
 using Map = Maui.GoogleMaps.Map;
+using TerraMarcadaV2.Helpers;
 
 namespace TerraMarcadaV2.Editing
 {
@@ -28,6 +29,8 @@ namespace TerraMarcadaV2.Editing
     {
         private readonly Map _map;
         private readonly MapDataViewModel _vm;
+
+        public Action<string> OnStatusSize { get; set; } = _ => { };
 
         private readonly List<Pin> _handles = new();
         private bool _wired;
@@ -135,6 +138,8 @@ namespace TerraMarcadaV2.Editing
             _data = null;
             _closed = false;
             ClearHandles();
+
+            OnStatusSize("");
         }
 
         #endregion
@@ -167,6 +172,31 @@ namespace TerraMarcadaV2.Editing
 
         #endregion
 
+        private void BuildSizeText()
+        {
+            bool sucess = false;
+            if(_polyline != null)
+            {
+                var posList = _polyline?.Positions.ToList() ?? new List<Position>();
+                double DistanceInMeters = GeoMath.CalculatePolylineDistance(posList);
+
+                OnStatusSize($": Distância: {DistanceInMeters:F2} m");
+                sucess = true;
+            }
+            
+            if(_polygon != null)
+            {
+                var posListPoly = _polygon?.Positions.ToList() ?? new List<Position>();
+                double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(posListPoly);
+
+                OnStatusSize($"Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}");
+                sucess = true;
+            }
+
+            if (!sucess)
+                OnStatusSize("");
+        }
+
         #region Build / Clear handles
 
         private void ClearHandles()
@@ -198,6 +228,8 @@ namespace TerraMarcadaV2.Editing
                 _handles.Add(pin);
                 _map.Pins.Add(pin);
             }
+
+            BuildSizeText();
         }
 
         #endregion
@@ -210,6 +242,8 @@ namespace TerraMarcadaV2.Editing
             if (e.Pin?.Tag is not VertexTag v || !v.IsEditHandle) return;
 
             _updating = true;
+
+            BuildSizeText();
             try
             {
                 var newPos = e.Pin.Position;
@@ -235,6 +269,8 @@ namespace TerraMarcadaV2.Editing
         private async void Map_PinDragEnd(object sender, PinDragEventArgs e)
         {
             if (e.Pin?.Tag is not VertexTag v || !v.IsEditHandle) return;
+
+            BuildSizeText();
 
             // Persistência no fim do drag
             switch (_kind)
@@ -264,6 +300,8 @@ namespace TerraMarcadaV2.Editing
 
             // Evita que o mapa trate a seleção padrão
             e.Handled = true;
+
+            BuildSizeText();
 
             switch (_kind)
             {
@@ -336,6 +374,8 @@ namespace TerraMarcadaV2.Editing
             if (!InsertMode) return;
             var pt = e.Point;
 
+            BuildSizeText();
+
             switch (_kind)
             {
                 case EditTargetKind.Polyline:
@@ -399,6 +439,8 @@ namespace TerraMarcadaV2.Editing
         {
             if (!InsertMode) return;
             var pt = e.Point;
+
+            BuildSizeText();
 
             switch (_kind)
             {
@@ -469,6 +511,11 @@ namespace TerraMarcadaV2.Editing
             var verts = _polyline.Positions;
             if (index < 0 || index >= verts.Count) return;
             verts[index] = p;
+
+            var posList = _polyline?.Positions.ToList() ?? new List<Position>();
+            double DistanceInMeters = GeoMath.CalculatePolylineDistance(posList);
+
+            OnStatusSize($": Distância: {DistanceInMeters:F2} m");
         }
 
         private void UpdatePolygonVertex(int index, Position p)
@@ -484,6 +531,11 @@ namespace TerraMarcadaV2.Editing
 
             _polygon.Positions.Clear();
             foreach (var v in verts) _polygon.Positions.Add(v);
+
+            var posList = _polygon?.Positions.ToList() ?? new List<Position>();
+            double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(posList);
+
+            OnStatusSize($"Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}");
         }
 
         private void UpdateHoleVertex(int holeIndex, int index, Position p)
@@ -501,6 +553,11 @@ namespace TerraMarcadaV2.Editing
                 list[^1] = list[0];
 
             _polygon.Holes[holeIndex] = list.ToArray();
+
+            //var posList = _polygon?.Positions.ToList() ?? new List<Position>();
+            double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(list);
+
+            OnStatusSize($"Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}");
         }
 
         private void ReindexHandlesAfterRemoval(int removedIndex)
@@ -514,6 +571,22 @@ namespace TerraMarcadaV2.Editing
                 }
             }
             // Atualiza ícones/posições caso necessário
+
+            switch (_kind)
+            {
+                case EditTargetKind.Polyline:
+                    var posList = _polyline?.Positions.ToList() ?? new List<Position>();
+                    double DistanceInMeters = GeoMath.CalculatePolylineDistance(posList);
+
+                    OnStatusSize($": Distância: {DistanceInMeters:F2} m");
+                    break;
+                case EditTargetKind.Polygon:
+                    var posListPoly = _polygon?.Positions.ToList() ?? new List<Position>();
+                    double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(posListPoly);
+
+                    OnStatusSize($"Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}");
+                    break;
+            }
         }
 
         private void RebuildHandlesFromCurrent()
@@ -551,6 +624,7 @@ namespace TerraMarcadaV2.Editing
             double y = p.Latitude * k;
             return (x, y);
         }
+
 
         // Retorna índice do segmento mais próximo e distância (m)
         private static (int segIndex, double distMeters) FindClosestSegment(IList<Position> verts, Position point)

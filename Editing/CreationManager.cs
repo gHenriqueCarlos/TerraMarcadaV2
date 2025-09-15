@@ -19,6 +19,7 @@ namespace TerraMarcadaV2.Creation
         private readonly MapDataViewModel _vm;
 
         public Action<string> OnStatus { get; set; } = _ => { };
+        public Action<string> OnStatusSize { get; set; } = _ => { };
 
         public bool Active => _mode != CreateMode.None;
         public bool SnapEnabled { get; set; } = true;
@@ -288,6 +289,7 @@ namespace TerraMarcadaV2.Creation
             _circleCenter = null;
             RemovePreview();
             OnStatus("Pronto.");
+            OnStatusSize("");
         }
         private void BuildTempPoint()
         {
@@ -368,6 +370,8 @@ namespace TerraMarcadaV2.Creation
             _tempPolygon = null; _polygonPreviewAdded = false;
             _tempCircle = null; _circlePreviewAdded = false;
             _tempPointPin = null; _pointPreviewAdded = false;
+
+            OnStatusSize("");
         }
 
         private void EnsurePreviewOnMapForPolyline(int count)
@@ -382,6 +386,17 @@ namespace TerraMarcadaV2.Creation
                 _map.Polylines.Remove(_tempPolyline);
                 _polylinePreviewAdded = false;
             }
+
+            if (_tempPolyline != null && _tempPolyline.Positions.Count < 2)
+            {
+                OnStatusSize("Distancia: N/A");
+                return;
+            }
+
+            var posList = _tempPolyline?.Positions.ToList() ?? new List<Position>();
+            double DistanceInMeters = GeoMath.CalculatePolylineDistance(posList);
+
+            OnStatusSize($": Distância: {DistanceInMeters:F2} m");
         }
 
         private void EnsurePreviewOnMapForPolygon(int count)
@@ -398,6 +413,19 @@ namespace TerraMarcadaV2.Creation
                 _map.Polygons.Remove(_tempPolygon);
                 _polygonPreviewAdded = false;
             }
+
+            // Fazer uma lista com todas as posições do poligono para calcular a área.
+
+            if(_tempPolygon != null && _tempPolygon.Positions.Count < 3)
+            {
+                OnStatusSize("Área: N/A");
+                return;
+            }
+
+            var posList = _tempPolygon?.Positions.ToList() ?? new List<Position>();
+            double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(posList);
+
+            OnStatusSize($"Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}");
         }
 
         private void EnsurePreviewOnMapForCircle(double radiusMeters)

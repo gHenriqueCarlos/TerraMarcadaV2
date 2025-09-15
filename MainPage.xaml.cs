@@ -3,6 +3,7 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -43,17 +44,67 @@ namespace TerraMarcadaV2
         private (Circle circ, Color stroke, float width)? _circOld;
 
         private readonly DatabaseService db;
+
+        public string StatusText
+        {
+            get => lblStatus.Text;  // Retorna o texto atual da primeira label
+            set
+            {
+                lblStatus.Text = value;   // Atualiza a primeira label
+                lblStatus2.Text = value;  // Atualiza a segunda label automaticamente
+            }
+        }
+
+        public string StatusSizeText
+        {
+            get => lblArea.Text;  // Retorna o texto atual da primeira label
+            set
+            {
+                lblArea.Text = value;   // Atualiza a primeira label
+                lblArea.Text = value;  // Atualiza a segunda label automaticamente
+            }
+        }
+
+        private void UpdateStatus(string newStatus)
+        {
+            StatusText = newStatus; // Isso vai atualizar ambas as labels
+
+            if (string.IsNullOrWhiteSpace(newStatus))
+                BorderLblStatus2.IsVisible = false;
+            else
+                BorderLblStatus2.IsVisible = true;
+        }
+
+        private void UpdateStatusSize(string newStatus)
+        {
+            StatusSizeText = newStatus; // Isso vai atualizar ambas as labels
+            if (string.IsNullOrWhiteSpace(newStatus))
+                BorderLblArea.IsVisible = false;
+            else
+                BorderLblArea.IsVisible = true;
+        }
+
         public MainPage()
         {
             InitializeComponent();
 
+            UpdateStatus("");
+            UpdateStatusSize("");
+
             db = ServiceHelper.GetService<DatabaseService>();
 
             _vm = new MapDataViewModel();
-            _edit = new EditManager(map, _vm);
+            //_edit = new EditManager(map, _vm);
+            _edit = new EditManager(map, _vm)
+            {
+                //OnStatus = s => lblStatus.Text = s
+                OnStatusSize = s => UpdateStatusSize(s)
+            };
             _create = new CreationManager(map, _vm)
             {
-                OnStatus = s => lblStatus.Text = s
+                //OnStatus = s => lblStatus.Text = s
+                OnStatus = s => StatusText = s,
+                OnStatusSize = s => UpdateStatusSize(s)
             };
 
             // Clique no mapa: só usamos aqui para seleção/edição quando NÃO estivermos criando
@@ -149,13 +200,13 @@ namespace TerraMarcadaV2
         private void OnSnapToggled(object sender, ToggledEventArgs e)
         {
             _create.SnapEnabled = e.Value;
-            lblStatus.Text = e.Value ? "Snap habilitado." : "Snap desabilitado.";
+            UpdateStatus(e.Value ? "Snap habilitado." : "Snap desabilitado.");
         }
 
         private void OnCreatePointClicked(object sender, EventArgs e)
         {
             _create.StartPoint();
-            lblStatus.Text = "Criação de PONTO: toque no mapa para posicionar.";
+            UpdateStatus("Criação de PONTO: toque no mapa para posicionar.");
         }
 
         private async void OnCreatePointTimedClicked(object sender, EventArgs e)
@@ -167,25 +218,25 @@ namespace TerraMarcadaV2
         private void OnCreatePolylineClicked(object sender, EventArgs e)
         {
             _create.StartPolyline();
-            lblStatus.Text = "Criação de LINHA: toque para adicionar vértices, 'Concluir' para finalizar.";
+            UpdateStatus("Criação de LINHA: toque para adicionar vértices, 'Concluir' para finalizar.");
         }
 
         private void OnCreatePolygonClicked(object sender, EventArgs e)
         {
             _create.StartPolygon();
-            lblStatus.Text = "Criação de POLÍGONO: toque para adicionar vértices, 'Concluir' ou toque no primeiro vértice para fechar.";
+            UpdateStatus("Criação de POLÍGONO: toque para adicionar vértices, 'Concluir' ou toque no primeiro vértice para fechar.");
         }
 
         private void OnCreateHoleClicked(object sender, EventArgs e)
         {
             _create.StartHole();
-            lblStatus.Text = "Criação de BURACO: 1º toque dentro do polígono-alvo; depois adicione os vértices e 'Concluir'.";
+            UpdateStatus("Criação de BURACO: 1º toque dentro do polígono-alvo; depois adicione os vértices e 'Concluir'.");
         }
 
         private void OnCreateCircleClicked(object sender, EventArgs e)
         {
             _create.StartCircle();
-            lblStatus.Text = "Criação de CÍRCULO: 1º toque define o centro, 2º toque define o raio.";
+            UpdateStatus("Criação de CÍRCULO: 1º toque define o centro, 2º toque define o raio.");
         }
 
         private void OnCreateUndoClicked(object sender, EventArgs e)
@@ -209,7 +260,7 @@ namespace TerraMarcadaV2
         private void OnCreateCancelClicked(object sender, EventArgs e)
         {
             _create.Cancel();
-            lblStatus.Text = "Criação cancelada.";
+            UpdateStatus("Criação cancelada.");
         }
 
         private void OnMapPinClicked(object sender, PinClickedEventArgs e)
@@ -222,38 +273,38 @@ namespace TerraMarcadaV2
         // Adicionar botão para deletar elementos (no MainPage.xaml)
         private async void OnDeleteSelectedClicked(object sender, EventArgs e)
         {
-            if (_create.Active) { lblStatus.Text = "Finalize ou cancele a criação antes de deletar."; return; }
+            if (_create.Active) { UpdateStatus("Finalize ou cancele a criação antes de deletar."); return; }
 
             if (_selectedPolygon != null)
             {
                 _vm.RemoveMapDataAsync(_selectedPolygon.Tag as MapData, map);
-                lblStatus.Text = "Polígono deletado.";
+                UpdateStatus("Polígono deletado.");
                 _selectedPolygon = null;
                 return;
             }
             if (_selectedPolyline != null)
             {
                 _vm.RemoveMapDataAsync(_selectedPolyline.Tag as MapData, map);
-                lblStatus.Text = "Polilinha deletada.";
+                UpdateStatus("Polilinha deletada.") ;
                 _selectedPolyline = null;
                 return;
             }
             if (_selectedCircle != null)
             {
                 _vm.RemoveMapDataAsync(_selectedCircle.Tag as MapData, map);
-                lblStatus.Text = "Círculo deletado.";
+                UpdateStatus("Círculo deletado.");
                 _selectedCircle = null;
                 return;
             }
             if (_selectedPin != null)
             {
                 _vm.RemoveMapDataAsync(_selectedPin.Tag as MapData, map);
-                lblStatus.Text = "Ponto deletado.";
+                UpdateStatus("Ponto deletado.");
                 _selectedPin = null;
                 return;
             }
 
-            lblStatus.Text = "Nenhum elemento selecionado para deletar.";
+            UpdateStatus("Nenhum elemento selecionado para deletar.");
         }
 
 
@@ -263,43 +314,43 @@ namespace TerraMarcadaV2
         private void OnInsertToggled(object sender, ToggledEventArgs e)
         {
             _edit.SetInsertMode(e.Value);
-            lblStatus.Text = e.Value
+            UpdateStatus(e.Value
                 ? "Inserção de vértices ATIVA. Toque no mapa para inserir no segmento mais próximo."
-                : "Inserção de vértices DESATIVADA.";
+                : "Inserção de vértices DESATIVADA.");
         }
 
         private void OnSelectPolygonClicked(object sender, EventArgs e)
         {
-            if (_create.Active) { lblStatus.Text = "Finalize/cancele a criação antes de selecionar para edição."; return; }
+            if (_create.Active) { UpdateStatus("Finalize/cancele a criação antes de selecionar para edição."); return; }
             _awaitingSelectPolygon = true;
             _awaitingSelectPolyline = false;
             _awaitingHoleTap = false;
-            lblStatus.Text = "Toque dentro do polígono para selecioná-lo.";
+            UpdateStatus("Toque dentro do polígono para selecioná-lo.");
         }
 
         private void OnSelectPolylineClicked(object sender, EventArgs e)
         {
-            if (_create.Active) { lblStatus.Text = "Finalize/cancele a criação antes de selecionar para edição."; return; }
+            if (_create.Active) { UpdateStatus("Finalize/cancele a criação antes de selecionar para edição."); return; }
             _awaitingSelectPolyline = true;
             _awaitingSelectPolygon = false;
             _awaitingHoleTap = false;
-            lblStatus.Text = "Toque próximo à polilinha para selecioná-la.";
+            UpdateStatus("Toque próximo à polilinha para selecioná-la.");
         }
 
         private void OnEditSelectedClicked(object sender, EventArgs e)
         {
-            if (_create.Active) { lblStatus.Text = "Finalize/cancele a criação antes de editar."; return; }
+            if (_create.Active) { UpdateStatus("Finalize/cancele a criação antes de editar."); return; }
 
             if (_selectedPolygon != null)
             {
                 _edit.StartEditPolygon(_selectedPolygon);
-                lblStatus.Text = "Editando polígono. Arraste os pinos laranja. Clique no pino para remover.";
+                UpdateStatus("Editando polígono. Arraste os pinos laranja. Clique no pino para remover.");
                 return;
             }
             if (_selectedPolyline != null)
             {
                 _edit.StartEditPolyline(_selectedPolyline);
-                lblStatus.Text = "Editando polilinha. Arraste os pinos laranja. Clique no pino para remover.";
+                UpdateStatus("Editando polilinha. Arraste os pinos laranja. Clique no pino para remover.");
                 return;
             }
             DisplayAlert("Selecionar", "Selecione primeiro um polígono ou uma polilinha.", "OK");
@@ -307,7 +358,7 @@ namespace TerraMarcadaV2
 
         private void OnEditHoleClicked(object sender, EventArgs e)
         {
-            if (_create.Active) { lblStatus.Text = "Finalize/cancele a criação antes de editar buraco."; return; }
+            if (_create.Active) { UpdateStatus("Finalize/cancele a criação antes de editar buraco."); return; }
             if (_selectedPolygon == null)
             {
                 DisplayAlert("Editar buraco", "Selecione primeiro o polígono pai.", "OK");
@@ -316,13 +367,13 @@ namespace TerraMarcadaV2
             _awaitingHoleTap = true;
             _awaitingSelectPolygon = false;
             _awaitingSelectPolyline = false;
-            lblStatus.Text = "Toque dentro do buraco desejado para editar.";
+            UpdateStatus("Toque dentro do buraco desejado para editar.");
         }
 
         private void OnFinishEditingClicked(object sender, EventArgs e)
         {
             _edit.CancelEdit();
-            lblStatus.Text = "Edição concluída.";
+            UpdateStatus("Edição concluída.");
             ClearHighlights();
         }
 
@@ -361,11 +412,11 @@ namespace TerraMarcadaV2
                         _selectedPolyline = null;
                         _selectedCircle = null;
                         Highlight(poly);
-                        lblStatus.Text = $"Polígono selecionado (vértices: {poly.Positions.Count}).";
+                        UpdateStatus($"Polígono selecionado (vértices: {poly.Positions.Count}).");
                     }
                     else
                     {
-                        lblStatus.Text = "Nenhum polígono contém esse ponto.";
+                        UpdateStatus("Nenhum polígono contém esse ponto.");
                     }
                     _awaitingSelectPolygon = false;
                     return;
@@ -380,11 +431,11 @@ namespace TerraMarcadaV2
                         _selectedPolygon = null;
                         _selectedCircle = null;
                         Highlight(pl);
-                        lblStatus.Text = $"Polilinha selecionada (vértices: {pl.Positions.Count}).";
+                        UpdateStatus($"Polilinha selecionada (vértices: {pl.Positions.Count}).");
                     }
                     else
                     {
-                        lblStatus.Text = "Nenhuma polilinha próxima ao toque.";
+                        UpdateStatus("Nenhuma polilinha próxima ao toque.");
                     }
                     _awaitingSelectPolyline = false;
                     return;
@@ -399,7 +450,7 @@ namespace TerraMarcadaV2
                         if (holeData != null)
                         {
                             _edit.StartEditHole(_selectedPolygon, holeIndex, holeData);
-                            lblStatus.Text = $"Editando buraco #{holeIndex + 1}.";
+                            UpdateStatus($"Editando buraco #{holeIndex + 1}.");
                         }
                         else
                         {
@@ -426,11 +477,11 @@ namespace TerraMarcadaV2
                     _selectedPolyline = null;
                     _selectedCircle = null;
                     Highlight(poly);
-                    lblStatus.Text = $"Polígono selecionado (vértices: {poly.Positions.Count}).";
+                    UpdateStatus($"Polígono selecionado (vértices: {poly.Positions.Count}).");
                 }
                 else
                 {
-                    lblStatus.Text = "Nenhum polígono contém esse ponto.";
+                    UpdateStatus("Nenhum polígono contém esse ponto.");
                 }
                 _awaitingSelectPolygon = false;
                 return;
@@ -445,11 +496,11 @@ namespace TerraMarcadaV2
                     _selectedPolygon = null;
                     _selectedCircle = null;
                     Highlight(pl);
-                    lblStatus.Text = $"Polilinha selecionada (vértices: {pl.Positions.Count}).";
+                    UpdateStatus($"Polilinha selecionada (vértices: {pl.Positions.Count})");
                 }
                 else
                 {
-                    lblStatus.Text = "Nenhuma polilinha próxima ao toque.";
+                    UpdateStatus("Nenhuma polilinha próxima ao toque.");
                 }
                 _awaitingSelectPolyline = false;
                 return;
@@ -464,7 +515,7 @@ namespace TerraMarcadaV2
                     if (holeData != null)
                     {
                         _edit.StartEditHole(_selectedPolygon, holeIndex, holeData);
-                        lblStatus.Text = $"Editando buraco #{holeIndex + 1}.";
+                        UpdateStatus($"Editando buraco #{holeIndex + 1}.");
                     }
                     else
                     {
@@ -491,7 +542,7 @@ namespace TerraMarcadaV2
             _selectedCircle = null;
             _selectedPin = null;
             Highlight(pg);
-            lblStatus.Text = $"Polígono selecionado (vértices: {pg.Positions.Count}). Clique em 'Editar selecionado'.";
+            UpdateStatus($"Polígono selecionado (vértices: {pg.Positions.Count}). Clique em 'Editar selecionado'.");
         }
 
         private void OnPolylineShapeClicked(Polyline pl)
@@ -502,7 +553,7 @@ namespace TerraMarcadaV2
             _selectedCircle = null;
             _selectedPin = null;
             Highlight(pl);
-            lblStatus.Text = $"Polilinha selecionada (vértices: {pl.Positions.Count}). Clique em 'Editar selecionado'.";
+            UpdateStatus($"Polilinha selecionada (vértices: {pl.Positions.Count}). Clique em 'Editar selecionado'.");
         }
 
         private void OnCircleShapeClicked(Circle c)
@@ -513,7 +564,7 @@ namespace TerraMarcadaV2
             _selectedPolyline = null;
             _selectedPin = null;
             Highlight(c);
-            lblStatus.Text = $"Círculo selecionado (raio: {c.Radius.Meters:0} m).";
+            UpdateStatus($"Círculo selecionado (raio: {c.Radius.Meters:0} m).");
         }
 
         // =======================================
@@ -652,80 +703,7 @@ namespace TerraMarcadaV2
 
         private readonly List<MapData> mapDataList = new List<MapData>(); // Lista para armazenar os dados do mapa
 
-        private double CalculatePolylineDistance(List<Position> coordinates)
-        {
-            double totalDistance = 0;
-            for (int i = 0; i < coordinates.Count - 1; i++)
-            {
-                var start = coordinates[i];
-                var end = coordinates[i + 1];
-                totalDistance += Location.CalculateDistance(start.Latitude, start.Longitude, end.Latitude, end.Longitude, DistanceUnits.Kilometers);
-            }
-            return totalDistance * 1000; // Convertendo para metros
-        }
-
-        static double ComputePolygonAreaSquareMeters(List<Position> coordinates)
-        {
-            // Projeção local (equiretangular) + fórmula do polígono (shoelace)
-            if (coordinates == null || coordinates.Count < 3) return 0;
-
-            double lat0Deg = coordinates.Average(v => v.Latitude);
-            double lat0Rad = lat0Deg * Math.PI / 180.0;
-            double lon0Deg = coordinates.Average(v => v.Longitude);
-
-            // metros por grau na latitude média
-            double mPerLat = 111132.954 - 559.822 * Math.Cos(2 * lat0Rad) + 1.175 * Math.Cos(4 * lat0Rad);
-            double mPerLon = 111132.954 * Math.Cos(lat0Rad);
-
-            // para precisão, use o anel como está (não precisa repetir o 1º no final)
-            var pts = coordinates.Select(v => (
-                x: (v.Longitude - lon0Deg) * mPerLon,
-                y: (v.Latitude - lat0Deg) * mPerLat
-            )).ToArray();
-
-            double s = 0;
-            int n = pts.Length;
-            for (int i = 0; i < n; i++)
-            {
-                var (xi, yi) = pts[i];
-                var (xj, yj) = pts[(i + 1) % n];
-                s += xi * yj - xj * yi;
-            }
-            return Math.Abs(s) * 0.5; // m²
-        }
-
-        //private double CalculatePolygonArea(List<Position> coordinates)
-        //{
-        //    // Verificar se o polígono tem pelo menos 3 pontos (não pode ser um ponto ou uma linha)
-        //    if (coordinates.Count < 3)
-        //        return 0;
-
-        //    double area = 0;
-
-        //    // Fórmula de Shoelace para calcular a área de um polígono
-        //    for (int i = 0; i < coordinates.Count; i++)
-        //    {
-        //        int j = (i + 1) % coordinates.Count; // Índice do próximo ponto (circular)
-        //        var p1 = coordinates[i];
-        //        var p2 = coordinates[j];
-
-        //        // Somar o produto das coordenadas (Longitude * Latitude)
-        //        area += p1.Longitude * p2.Latitude;
-        //        area -= p1.Latitude * p2.Longitude;
-        //    }
-
-        //    area = Math.Abs(area) / 2.0;
-
-        //    // Retorna a área em metros quadrados (considerando a fórmula de área geodésica)
-        //    return area;
-        //}
-
-        static string FormatAreaHa(double m2)
-        {
-            double ha = m2 / 10000.0;
-            return ha < 1 ? $"{ha:0.###} ha ({m2:0} m²)" : $"{ha:0.##} ha";
-        }
-
+        
         private async void PopulateMapElementsListAsync()
         {
             // Limpar a lista de itens antes de preencher
@@ -739,7 +717,7 @@ namespace TerraMarcadaV2
                 if (item.Type == MapDataTypes.Polyline)
                 {
                     // Calcular a distância da polilinha
-                    double DistanceInMeters = CalculatePolylineDistance(item.GetCoordinates());
+                    double DistanceInMeters = GeoMath.CalculatePolylineDistance(item.GetCoordinates());
 
                     // Adiciona as informações de distância no nome com formatação condicional
                     item.Name += $": Distância: {DistanceInMeters:F2} m";
@@ -747,15 +725,15 @@ namespace TerraMarcadaV2
                 else if (item.Type == MapDataTypes.Polygon)
                 {
                     // Calcular a área do polígono
-                    double AreaInMetersSquared = ComputePolygonAreaSquareMeters(item.GetCoordinates());
+                    double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(item.GetCoordinates());
 
                     // Adiciona as informações de área no nome
-                    item.Name += $": Área: {FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}";
+                    item.Name += $": Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}";
                 }
                 else if (item.Type == MapDataTypes.Circle)
                 {
                     // Calcular a área do polígono
-                    double AreaInMetersSquared = ComputePolygonAreaSquareMeters(item.GetCoordinates());
+                    double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(item.GetCoordinates());
 
                     // Adiciona as informações de área no nome
                     item.Name += $": Raio: {item.Radius} m";

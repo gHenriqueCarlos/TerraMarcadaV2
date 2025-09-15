@@ -13,8 +13,8 @@ public final class R {
 	}
 	public static final class id {
 		public static final int amu_text = 0x7f080052;
-		public static final int webview = 0x7f08021d;
-		public static final int window = 0x7f080220;
+		public static final int webview = 0x7f080220;
+		public static final int window = 0x7f080223;
 	}
 	public static final class layout {
 		public static final int amu_info_window = 0x7f0b001c;

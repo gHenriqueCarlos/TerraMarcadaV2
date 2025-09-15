@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace TerraMarcadaV2.Models
 {
-    public enum MapDataTypes { Pin = 0, Polyline = 1, Polygon = 2, Hole = 3, Circle = 4 }
+    public enum MapDataTypes { Pin = 0, Polyline = 1, Polygon = 2, Hole = 3, Circle = 4, WalkingLine = 5 }
 
     public class MapData
     {

@@ -14,12 +14,12 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TerraMarcadaV2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.2.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2+3ea7bf1a40f636a39e3107add149336fab3718e7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2+4ea3689d2bddea6674aa514465ccc7c5a067ce75")]
 [assembly: System.Reflection.AssemblyProductAttribute("TerraMarcadaV2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TerraMarcadaV2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.2.0.0")]
-[assembly: System.Runtime.Versioning.TargetPlatformAttribute("MacCatalyst18.0")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("MacCatalyst15.0")]
+[assembly: System.Runtime.Versioning.TargetPlatformAttribute("MacCatalyst18.5")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("MacCatalyst18.5")]
 
 // Gerado pela classe WriteCodeFragment do MSBuild.
 
