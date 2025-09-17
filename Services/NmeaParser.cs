@@ -49,12 +49,11 @@ public class NmeaParser
         if (int.TryParse(p[3], out var vis))
             Current.SatellitesVisible = vis;
 
-        // Adiciona os satélites à lista
         for (int i = 4; i < p.Length; i += 4)
         {
             if (int.TryParse(p[i], out var satelliteId))
             {
-                var signalStrength = p[i + 3]; // A força do sinal está no índice 7
+                var signalStrength = p[i + 3];
                 Current.Satellites.Add(new Satellite
                 {
                     SatelliteId = satelliteId,
@@ -63,7 +62,6 @@ public class NmeaParser
             }
         }
     }
-
 
     private static double ConvertToDecimal(string value, string hemi)
     {

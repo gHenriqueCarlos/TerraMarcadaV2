@@ -38,10 +38,8 @@ namespace TerraMarcadaV2.Creation
         private bool _polygonPreviewAdded;
         private bool _circlePreviewAdded;
 
-        // Para Hole
         private Polygon _parentPolygonForHole;
 
-        // Para Circle
         private Position? _circleCenter;
 
         private bool _wired;
@@ -49,11 +47,8 @@ namespace TerraMarcadaV2.Creation
         private Pin _tempPointPin;
         private bool _pointPreviewAdded;
 
-
-        // Preferência por snap em Pins (além do snap normal em vértices/arestas)
         public bool PreferSnapToPins { get; set; } = true;
 
-        // Raio de snap específico para Pins (em metros)
         public double PinSnapThresholdMeters { get; set; } = 20;
 
 
@@ -76,7 +71,7 @@ namespace TerraMarcadaV2.Creation
             _wired = true;
             _map.MapClicked += OnMapClicked;
             _map.MapLongClicked += OnMapLongClicked;
-            _map.PinClicked += OnPinClickedForCreation;  // << NOVO
+            _map.PinClicked += OnPinClickedForCreation; 
         }
 
         private void Unwire()
@@ -85,16 +80,15 @@ namespace TerraMarcadaV2.Creation
             _wired = false;
             _map.MapClicked -= OnMapClicked;
             _map.MapLongClicked -= OnMapLongClicked;
-            _map.PinClicked -= OnPinClickedForCreation;  // << NOVO
+            _map.PinClicked -= OnPinClickedForCreation; 
         }
 
-        // ================== API PÚBLICA ==================
 
         public void StartPoint()
         {
             Reset();
             _mode = CreateMode.Point;
-            BuildTempPoint();                    // <-- cria o pin de preview
+            BuildTempPoint();                 
             OnStatus("Criação de PONTO: toque no mapa.");
         }
 
@@ -175,7 +169,6 @@ namespace TerraMarcadaV2.Creation
 
                             await _vm.AddMapData(data, _map);
 
-                            // foca e limpa preview
                             _map.FocusOn(_tempVerts[0], 500);
                             EnsurePreviewOnMapForPoint(false);
 
@@ -279,8 +272,6 @@ namespace TerraMarcadaV2.Creation
 
         public void Cancel() => Reset();
 
-        // ================== Internals ==================
-
         private void Reset()
         {
             _mode = CreateMode.None;
@@ -322,7 +313,7 @@ namespace TerraMarcadaV2.Creation
         {
             _tempPolyline = new Polyline
             {
-                StrokeColor = Colors.Red,     // destaque
+                StrokeColor = Colors.Red,   
                 StrokeWidth = 6f,
                 IsClickable = false,
                 ZIndex = 10000
@@ -334,9 +325,9 @@ namespace TerraMarcadaV2.Creation
         {
             _tempPolygon = new Polygon
             {
-                StrokeColor = Colors.Yellow,  // destaque
+                StrokeColor = Colors.Yellow, 
                 StrokeWidth = 4f,
-                FillColor = Color.FromRgba(255, 255, 0, 64), // amarelo translúcido
+                FillColor = Color.FromRgba(255, 255, 0, 64), 
                 IsClickable = false,
                 ZIndex = 10000
             };
@@ -349,7 +340,7 @@ namespace TerraMarcadaV2.Creation
             {
                 Center = new Position(0, 0),
                 Radius = Distance.FromMeters(0),
-                StrokeColor = Colors.Cyan,    // destaque
+                StrokeColor = Colors.Cyan,
                 StrokeWidth = 5f,
                 FillColor = Color.FromRgba(0, 255, 255, 48),
                 IsClickable = false,
@@ -357,7 +348,6 @@ namespace TerraMarcadaV2.Creation
             };
             _circlePreviewAdded = false;
         }
-
 
         private void RemovePreview()
         {
@@ -401,8 +391,6 @@ namespace TerraMarcadaV2.Creation
 
         private void EnsurePreviewOnMapForPolygon(int count)
         {
-            // count aqui é do LIST lógico (com fechamento se houver)
-            // Precisamos de 3 posições (último == primeiro conta como 1)
             if (count >= 3 && !_polygonPreviewAdded)
             {
                 _map.Polygons.Add(_tempPolygon);
@@ -413,8 +401,6 @@ namespace TerraMarcadaV2.Creation
                 _map.Polygons.Remove(_tempPolygon);
                 _polygonPreviewAdded = false;
             }
-
-            // Fazer uma lista com todas as posições do poligono para calcular a área.
 
             if(_tempPolygon != null && _tempPolygon.Positions.Count < 3)
             {
@@ -509,12 +495,11 @@ namespace TerraMarcadaV2.Creation
             return false;
         }
 
-        // Evita “colar” no pin de prévia e em pinos especiais de edição
+        // Evita "colar" no pin de prévia e em pinos especiais de edição
         private bool IsSnappablePin(Pin pin)
         {
             if (pin == null) return false;
 
-            // não snap no pin de prévia do modo ponto
             if (_tempPointPin != null && ReferenceEquals(pin, _tempPointPin))
                 return false;
 
@@ -590,7 +575,7 @@ namespace TerraMarcadaV2.Creation
                             {
                                 if (_tempVerts.Count >= 3)
                                 {
-                                    _tempVerts.Add(_tempVerts[0]); // fechamento visual
+                                    _tempVerts.Add(_tempVerts[0]);
                                     UpdatePreview();
                                     OnStatus("Fechado. Pressione 'Concluir' para salvar.");
                                     return;
@@ -738,15 +723,15 @@ namespace TerraMarcadaV2.Creation
             }
         }
 
-        // IMPORTANT: NÃO async. O Maui.GoogleMaps espera retorno síncrono aqui.
+        // aviso: O Maui.GoogleMaps espera retorno síncrono 
         private void OnPinClickedForCreation(object sender, PinClickedEventArgs e)
         {
-            if (!Active) return; // só interessa quando estamos criando algo
+            if (!Active) 
+                return; 
 
             var pin = e.Pin;
             if (pin == null) return;
 
-            // Evitar "colar" no pin de prévia / pinos de edição
             if (!IsSnappablePin(pin)) return;
 
             var p = pin.Position;
@@ -764,7 +749,7 @@ namespace TerraMarcadaV2.Creation
                     EnsurePreviewOnMapForPoint(true);
 
                     OnStatus($"Ponto no pin: {pinName}. Pressione 'Concluir'.");
-                    e.Handled = true; // consome o clique do pin
+                    e.Handled = true; 
                     return;
 
                 case CreateMode.Polyline:
@@ -781,7 +766,7 @@ namespace TerraMarcadaV2.Creation
                         GeoUtils.DistanceMeters(_tempVerts[0], p) <= CloseThresholdMeters &&
                         _tempVerts.Count >= 3)
                     {
-                        _tempVerts.Add(_tempVerts[0]); // fechamento visual
+                        _tempVerts.Add(_tempVerts[0]); 
                         UpdatePreview();
                         OnStatus("Fechado. Pressione 'Concluir' para salvar.");
                         e.Handled = true;
@@ -820,9 +805,6 @@ namespace TerraMarcadaV2.Creation
                     return;
             }
         }
-
-
-        // ===== utilitários =====
 
         private List<Position> NormalizePolygonVerts(List<Position> verts)
         {

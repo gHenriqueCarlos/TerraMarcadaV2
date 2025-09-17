@@ -9,8 +9,6 @@ namespace TerraMarcadaV2
             InitializeComponent();
 
             this.UserAppTheme = AppTheme.Light;
-
-            // Obtém DatabaseService via ServiceHelper
             var databaseService = ServiceHelper.GetService<DatabaseService>();
 
             // Inicializa sem bloquear o UI thread

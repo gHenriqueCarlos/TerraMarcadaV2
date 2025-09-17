@@ -20,9 +20,9 @@ namespace TerraMarcadaV2.Editing
         public int Index { get; set; }
         public EditTargetKind Kind { get; init; }
         public MapData Data { get; init; }                 // Polyline/Polygon/Hole MapData
-        public Polygon ParentPolygon { get; init; }        // Para Polygon/Hole
-        public Polyline ParentPolyline { get; init; }      // Para Polyline
-        public int? HoleIndex { get; init; }               // Para Hole
+        public Polygon ParentPolygon { get; init; }        // Polygon/Hole
+        public Polyline ParentPolyline { get; init; }      // Polyline
+        public int? HoleIndex { get; init; }               //  Hole
     }
 
     public sealed class EditManager : IDisposable
@@ -34,7 +34,7 @@ namespace TerraMarcadaV2.Editing
 
         private readonly List<Pin> _handles = new();
         private bool _wired;
-        private bool _updating; // evita loops durante drag
+        private bool _updating;
 
         private EditTargetKind _kind = EditTargetKind.None;
         private MapData _data;                 // MapData alvo
@@ -43,10 +43,10 @@ namespace TerraMarcadaV2.Editing
         private int? _holeIndex;               // se Hole: índice do anel em polygon.Holes
         private bool _closed;                  // polygon/holes com último == primeiro?
 
-        // Modo inserir (clicar no mapa insere vértice no segmento mais próximo)
+        // Modo inserir (clicar no mapa insere vértice no segmento mais próximo) (ANOTAR: APERTAR E SEGURAR)
         public bool InsertMode { get; private set; } = false;
 
-        // Distância limite para permitir inserção no segmento (em metros)
+        // Distância limite para permitir inserção no segmento em metros
         public double InsertThresholdMeters { get; set; } = 25;
 
         public EditManager(Map map, MapDataViewModel viewModel)
@@ -61,8 +61,6 @@ namespace TerraMarcadaV2.Editing
             UnwireEvents();
             ClearHandles();
         }
-
-        #region Public API
 
         public void StartEditPolygon(Polygon polygon)
         {
@@ -100,10 +98,6 @@ namespace TerraMarcadaV2.Editing
             });
         }
 
-        /// <summary>
-        /// holeIndex = índice do anel em polygon.Holes (0..n-1)
-        /// holeData = MapData do buraco (criado ao adicionar o hole, com ParentId preenchido)
-        /// </summary>
         public void StartEditHole(Polygon parentPolygon, int holeIndex, MapData holeData)
         {
             CancelEdit();
@@ -142,10 +136,6 @@ namespace TerraMarcadaV2.Editing
             OnStatusSize("");
         }
 
-        #endregion
-
-        #region Wiring
-
         private void WireEvents()
         {
             if (_wired) return;
@@ -169,8 +159,6 @@ namespace TerraMarcadaV2.Editing
             _map.MapClicked -= Map_MapClicked;
             _map.MapLongClicked -= Map_MapLongClicked;
         }
-
-        #endregion
 
         private void BuildSizeText()
         {
@@ -197,7 +185,6 @@ namespace TerraMarcadaV2.Editing
                 OnStatusSize("");
         }
 
-        #region Build / Clear handles
 
         private void ClearHandles()
         {
@@ -231,10 +218,6 @@ namespace TerraMarcadaV2.Editing
 
             BuildSizeText();
         }
-
-        #endregion
-
-        #region Map events
 
         private void Map_PinDragging(object sender, PinDragEventArgs e)
         {
@@ -272,7 +255,6 @@ namespace TerraMarcadaV2.Editing
 
             BuildSizeText();
 
-            // Persistência no fim do drag
             switch (_kind)
             {
                 case EditTargetKind.Polygon:
@@ -295,10 +277,8 @@ namespace TerraMarcadaV2.Editing
 
         private async void Map_PinClicked(object sender, PinClickedEventArgs e)
         {
-            // Remover vértice ao clicar no pino (com validação de mínimo)
             if (e.Pin?.Tag is not VertexTag v || !v.IsEditHandle) return;
 
-            // Evita que o mapa trate a seleção padrão
             e.Handled = true;
 
             BuildSizeText();
@@ -502,10 +482,6 @@ namespace TerraMarcadaV2.Editing
             }
         }
 
-        #endregion
-
-        #region Update vertex helpers
-
         private void UpdatePolylineVertex(int index, Position p)
         {
             var verts = _polyline.Positions;
@@ -570,7 +546,6 @@ namespace TerraMarcadaV2.Editing
                     h.Label = $"v{v.Index + 1}";
                 }
             }
-            // Atualiza ícones/posições caso necessário
 
             switch (_kind)
             {
@@ -606,8 +581,6 @@ namespace TerraMarcadaV2.Editing
             }
         }
 
-        #endregion
-
         #region Geometry utils
 
         private static bool IsClosed(IList<Position> verts)
@@ -616,7 +589,7 @@ namespace TerraMarcadaV2.Editing
             return GeoUtils.SequenceAlmostEqual(new[] { verts[0] }, new[] { verts[^1] }, epsMeters: 0.01);
         }
 
-        // Converte latitude/longitude para “metros aproximados” num plano local
+        // Converte latitude/longitude para "metros aproximados" num plano local
         private static (double x, double y) ToLocalMeters(Position p, double latRef)
         {
             const double k = 111320.0; // ~ metros por grau
@@ -625,7 +598,7 @@ namespace TerraMarcadaV2.Editing
             return (x, y);
         }
 
-
+        //Obrigado stackoverflow <3
         // Retorna índice do segmento mais próximo e distância (m)
         private static (int segIndex, double distMeters) FindClosestSegment(IList<Position> verts, Position point)
         {
@@ -645,7 +618,7 @@ namespace TerraMarcadaV2.Editing
                 var (ax, ay) = ToLocalMeters(a, latRef);
                 var (bx, by) = ToLocalMeters(b, latRef);
 
-                // distância ponto-segmento em 2D
+                // distância ponto-segmento em 2D ?
                 var vx = bx - ax; var vy = by - ay;
                 var wx = px - ax; var wy = py - ay;
 

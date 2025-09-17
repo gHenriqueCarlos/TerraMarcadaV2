@@ -27,19 +27,7 @@ namespace TerraMarcadaV2
 
             var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "tmdatav4.db3");
             builder.Services.AddSingleton(new DatabaseService(dbPath));
-            //builder.Services.AddTransient(MapDataViewModel());
-
             builder.Services.AddSingleton<MapDataViewModel>();
-
-            builder.Services.AddSingleton<BluetoothService>();
-
-            // Registrar o ViewModel se necessário (se o ViewModel não for automaticamente instanciado na página)
-            builder.Services.AddSingleton<GnssViewModel>();
-            builder.Services.AddSingleton<SelectDeviceViewModel>();
-
-            // Registrar as páginas para o Shell (isso não é estritamente necessário se você usa rotas no Shell)
-            builder.Services.AddTransient<GnssPage>();
-            builder.Services.AddTransient<SelectDevicePage>();
 
 #if ANDROID
             builder.Services.AddSingleton<IPhotoSaver, PhotoSaver_Android>(); // #if ANDROID

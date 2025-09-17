@@ -12,12 +12,14 @@ public partial class Home : ContentPage
         // Solicitar permissão de localização (necessária para escanear dispositivos Bluetooth)
         var locationStatus = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
 
+        await Task.Delay(500);
+
         // Solicitar permissão de Bluetooth (Android 12+)
         var bluetoothStatus = await Permissions.RequestAsync<Permissions.Bluetooth>();
 
-        var cameraStatus = await Permissions.RequestAsync<Permissions.Camera>();
+        await Task.Delay(500);
 
-        //var btScanStatus = await Permissions.RequestAsync < Permissions.Blu>();
+        var cameraStatus = await Permissions.RequestAsync<Permissions.Camera>();
 
         // Retornando os dois estados de permissão como uma tupla
         return (locationStatus, bluetoothStatus, cameraStatus);
@@ -27,7 +29,7 @@ public partial class Home : ContentPage
     {
         base.OnAppearing();
 
-        await Task.Delay(1000); // 10000 milissegundos = 10 segundos
+        await Task.Delay(5000); // 10000 milissegundos = 10 segundos
 
 
         var (locationStatus, bluetoothStatus, cameraStatus) = await RequestPermissionsAsync();

@@ -27,7 +27,7 @@ namespace TerraMarcadaV2.Helpers
             {
                 if (_polygonsBound.Contains(pg)) continue;
                 pg.IsClickable = true;
-                pg.Clicked -= Polygon_Clicked; // evita duplicar
+                pg.Clicked -= Polygon_Clicked; 
                 pg.Clicked += Polygon_Clicked;
                 _polygonsBound.Add(pg);
             }

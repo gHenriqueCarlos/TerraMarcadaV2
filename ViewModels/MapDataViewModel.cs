@@ -20,7 +20,7 @@ namespace TerraMarcadaV2.ViewModels
         {
             var all = await db.GetAllMapData();
 
-            // Limpa o mapa (opcional – comente se não quiser limpar)
+            // Limpa o mapa
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 map.Pins.Clear();
@@ -31,17 +31,16 @@ namespace TerraMarcadaV2.ViewModels
 
             try
             {
-                // Tenta obter a localização atual do usuário
                 var location = await Geolocation.GetLastKnownLocationAsync();
 
                 if (location != null)
                 {
-                    // Foca o mapa na posição do usuário com um zoom de 500 metros
+                   
                     map.FocusOn(new Position(location.Latitude, location.Longitude), 500);
                 }
                 else
                 {
-                    // Caso não consiga obter a localização, foca no primeiro elemento
+                   
                     var firstElement = all.FirstOrDefault();
                     if (firstElement != null)
                     {
@@ -51,7 +50,6 @@ namespace TerraMarcadaV2.ViewModels
             }
             catch (Exception ex)
             {
-                // Lida com exceções ao tentar obter a localização
                 Console.WriteLine($"Erro ao obter a localização: {ex.Message}");
                 throw;
             }
@@ -142,7 +140,7 @@ namespace TerraMarcadaV2.ViewModels
                 }
             }
 
-            // 2ª passada: aplica HOLES aos polígonos
+            // 2ª passada: aplica HOLES aos polígonos existentes (precisa ser depois de criar todos os polígonos)
             foreach (var h in all.Where(x => x.Type == MapDataTypes.Hole))
             {
                 var ring = h.GetCoordinates().ToArray();
@@ -182,7 +180,6 @@ namespace TerraMarcadaV2.ViewModels
             return inside;
         }
 
-        // Procura o polígono mais próximo que contém a posição
         static Polygon FindNearestPolygon(Location position, Map map)
         {
 
@@ -273,15 +270,13 @@ namespace TerraMarcadaV2.ViewModels
         {
             if (holeData == null || parentPolygon == null) return;
 
-            // Garantir ParentId (fundamental para localizar o registro do hole)
+            // Garantir
             if (holeData.ParentId == null)
             {
                 var parentPolygonData = parentPolygon.Tag as MapData;
                 if (parentPolygonData == null) return;
                 holeData.ParentId = parentPolygonData.Id;
             }
-
-            // Atualiza o MapData do hole com o anel novo e persiste
             var ringList = newRing.ToList();
             holeData.SetCoordinates(ringList);
             await db.UpdateMapData(holeData);
@@ -315,13 +310,10 @@ namespace TerraMarcadaV2.ViewModels
                         var polygonToRemove = map.Polygons.FirstOrDefault(pg => pg.Tag is MapData md && md.Id == data.Id);
                         if (polygonToRemove != null)
                         {
-                            // 1) DB: remove todos os holes vinculados
                             await db.DeleteHolesByParentIdAsync(data.Id);
 
-                            // 2) UI: remove o polígono (os holes somem juntos)
                             map.Polygons.Remove(polygonToRemove);
 
-                            // 3) DB: remove o próprio polígono
                             await db.DeleteMapData(data.Id);
                         }
                         break;
@@ -332,7 +324,6 @@ namespace TerraMarcadaV2.ViewModels
                         {
                             var target = data.GetCoordinates();
 
-                            // encontra o hole na UI por conteúdo (não por referência)
                             int index = -1;
                             for (int i = 0; i < data.HolePolygon.Holes.Count; i++)
                             {
@@ -344,8 +335,6 @@ namespace TerraMarcadaV2.ViewModels
                             }
                             if (index >= 0)
                                 data.HolePolygon.Holes.RemoveAt(index);
-
-                            // DB: remove pelo ParentId + coords
                             var parentPolygonData = data.HolePolygon.Tag as MapData;
                             if (parentPolygonData != null)
                                 await db.DeleteHoleByParentAndCoordsAsync(parentPolygonData.Id, target);
@@ -369,9 +358,6 @@ namespace TerraMarcadaV2.ViewModels
         }
         public async Task<MapData?> AddMapData(MapData data, Map map)
         {
-            // Se map for null, só adiciona no DB (sem desenhar)
-
-            // 1) auto estilo (trata null -> cores vibrantes)
             StyleUtils.ApplyAutoStyle(data);
 
             switch (data.Type)
@@ -400,7 +386,7 @@ namespace TerraMarcadaV2.ViewModels
                         var polyline = new Polyline
                         {
                             IsClickable = true,
-                            StrokeColor = data.StrokeColor ?? Colors.Red,                 // fallback
+                            StrokeColor = data.StrokeColor ?? Colors.Red,                
                             StrokeWidth = Math.Max(4f, data.StrokeWidth),
                             ZIndex = 9,
                             Tag = data
@@ -419,9 +405,9 @@ namespace TerraMarcadaV2.ViewModels
                         var polygon = new Polygon
                         {
                             IsClickable = true,
-                            StrokeColor = data.StrokeColor ?? Colors.Lime,                // fallback
+                            StrokeColor = data.StrokeColor ?? Colors.Lime,               
                             StrokeWidth = Math.Max(3f, data.StrokeWidth),
-                            FillColor = data.FillColor ?? Color.FromRgba(0, 255, 0, 64),// fallback
+                            FillColor = data.FillColor ?? Color.FromRgba(0, 255, 0, 64),
                             ZIndex = 8,
                             Tag = data
                         };
@@ -469,7 +455,7 @@ namespace TerraMarcadaV2.ViewModels
                         {
                             Center = center,
                             Radius = Distance.FromMeters(Math.Max(1, data.Radius)),
-                            StrokeColor = data.StrokeColor ?? Colors.Cyan,                // fallback
+                            StrokeColor = data.StrokeColor ?? Colors.Cyan,             
                             StrokeWidth = Math.Max(4f, data.StrokeWidth),
                             FillColor = data.FillColor ?? Color.FromRgba(0, 255, 255, 48),
                             IsClickable = true,
@@ -485,6 +471,7 @@ namespace TerraMarcadaV2.ViewModels
             }
             return null;
         }
+        // TODO: melhorar a importação de KML (estilos, etc), atualmente só pega o básico e as vezes falha ao impota KML.
         public async Task ImportKML(string kmlFilePath)
         {
             XDocument doc = XDocument.Load(kmlFilePath);
@@ -518,7 +505,7 @@ namespace TerraMarcadaV2.ViewModels
                 }
                 else if (coordList.Count >= 2)  // Polilinha ou Polígono
                 {
-                    // Verifica se é um polígono ou uma polilinha
+                    
                     var data = new MapData
                     {
                         Name = name ?? "Forma",
@@ -530,7 +517,7 @@ namespace TerraMarcadaV2.ViewModels
                         data.Type = MapDataTypes.Polygon;
                         data.SetCoordinates(coordList);
                     }
-                    else  // Caso contrário, é uma polilinha
+                    else  //  é uma polilinha
                     {
                         data.Type = MapDataTypes.Polyline;
                         data.SetCoordinates(coordList);

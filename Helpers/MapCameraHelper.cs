@@ -20,7 +20,6 @@ namespace TerraMarcadaV2.Helpers
 
             var center = new Position((minLat + maxLat) / 2.0, (minLon + maxLon) / 2.0);
 
-            // raio aproximado: maior distância do centro até os cantos do bbox + padding
             double maxDist = 0;
             foreach (var p in new[]
             {

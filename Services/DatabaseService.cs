@@ -54,7 +54,7 @@ namespace TerraMarcadaV2.Services
             return 0;
         }
 
-        // NOVO: apaga todos os holes de um polígono pai
+        // apaga todos os holes de um polígono pai
         public async Task<int> DeleteHolesByParentIdAsync(int polygonId)
         {
             var holes = await _connection.Table<MapData>()

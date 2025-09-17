@@ -63,20 +63,8 @@ build_metadata.AdditionalFiles.ManifestResourceName = TerraMarcadaV2.Views.GeoCa
 build_metadata.AdditionalFiles.TargetPath = Views\GeoCamera.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\GeoCamera.xaml
 
-[C:/Users/CARLO/OneDrive/Documentos/GitHub/TerraMarcadaV2/Views/GnssPage.xaml]
-build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = TerraMarcadaV2.Views.GnssPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Views\GnssPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Views\GnssPage.xaml
-
 [C:/Users/CARLO/OneDrive/Documentos/GitHub/TerraMarcadaV2/Views/Home.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = TerraMarcadaV2.Views.Home.xaml
 build_metadata.AdditionalFiles.TargetPath = Views\Home.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\Home.xaml
-
-[C:/Users/CARLO/OneDrive/Documentos/GitHub/TerraMarcadaV2/Views/SelectDevicePage.xaml]
-build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = TerraMarcadaV2.Views.SelectDevicePage.xaml
-build_metadata.AdditionalFiles.TargetPath = Views\SelectDevicePage.xaml
-build_metadata.AdditionalFiles.RelativePath = Views\SelectDevicePage.xaml

@@ -8,8 +8,8 @@ namespace TerraMarcadaV2
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("SelectDevicePage", typeof(SelectDevicePage));
-            Routing.RegisterRoute("ColetoraGnss", typeof(GnssPage));
+            //Routing.RegisterRoute("SelectDevicePage", typeof(SelectDevicePage));
+            //Routing.RegisterRoute("ColetoraGnss", typeof(GnssPage));
             Routing.RegisterRoute("GeoCamera", typeof(GeoCamera));
         }
     }

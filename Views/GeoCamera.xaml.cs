@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Maui.Views;
-using CommunityToolkit.Maui.Core; // CameraInfo, CameraPosition, CameraFlashMode
+using CommunityToolkit.Maui.Core; 
 using Microsoft.Maui.Devices.Sensors;
 using TerraMarcadaV2.Services;
 using System.Globalization;
@@ -23,7 +23,7 @@ namespace TerraMarcadaV2.Views
             InitializeComponent();
 
             _timer = Dispatcher.CreateTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);  // Aumentando o intervalo
+            _timer.Interval = TimeSpan.FromSeconds(1);  
             _timer.Tick += async (_, __) => await RefreshLocationAsync();
 
         }
@@ -99,7 +99,7 @@ namespace TerraMarcadaV2.Views
                     UpdateHud();
                 }
             }
-            catch { /* sem pânico, tenta no próximo tick */ }
+            catch {/* tenta no próximo tick */ }
         }
 
         void UpdateHud()
@@ -145,7 +145,7 @@ namespace TerraMarcadaV2.Views
         {
             try
             {
-                // Ativa o indicador de carregamento
+                // idicador de carregamento
                 CaptureIndicator.IsRunning = true;
                 CaptureIndicator.IsVisible = true;
 
@@ -159,13 +159,11 @@ namespace TerraMarcadaV2.Views
                 string fileName = $"TM_{DateTime.UtcNow:yyyyMMdd_HHmmss}.jpg";
                 await PhotoSaver.SaveToGalleryAsync(photoStream, fileName, "TerraMarcada");
 
-                // Desativa o indicador de carregamento
                 CaptureIndicator.IsRunning = false;
                 CaptureIndicator.IsVisible = false;
             }
             catch (Exception ex)
             {
-                // Desativa o indicador de carregamento em caso de erro
                 CaptureIndicator.IsRunning = false;
                 CaptureIndicator.IsVisible = false;
                 await DisplayAlert("Erro ao capturar", ex.Message, "OK");
@@ -176,12 +174,12 @@ namespace TerraMarcadaV2.Views
         async Task<byte[]> CaptureImageWithOverlay()
         {
             using var captureImageCTS = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-            using var stream = await Camera.CaptureImage(captureImageCTS.Token);  // Garantindo que o stream seja descartado automaticamente
+            using var stream = await Camera.CaptureImage(captureImageCTS.Token);  
             if (stream == null) return null;
 
             using var ms = new MemoryStream();
             await stream.CopyToAsync(ms);
-            var raw = ms.ToArray();  // Converte o stream para byte[]
+            var raw = ms.ToArray();
 
             var when = _fixTs == default ? DateTimeOffset.UtcNow : _fixTs;
             var withHud = await OverlayServiceGeo.EscreverOverlayBasico(
@@ -197,12 +195,8 @@ namespace TerraMarcadaV2.Views
         {
             if (e.Status == GestureStatus.Running)
             {
-                // Calcula o novo nível de zoom
                 _currentZoom *= e.Scale;
                 _currentZoom = Math.Max(1.0, Math.Min(3.0, _currentZoom)); // Limita o zoom entre 1x e 3x
-
-                // Aplica o zoom ao CameraView
-                //Camera.ZoomToAsync(_currentZoom, 100);
                 Camera.ZoomFactor = (float)_currentZoom;
             }
         }
@@ -224,9 +218,6 @@ namespace TerraMarcadaV2.Views
                 Camera.CameraFlashMode = CameraFlashMode.Off;
                 BtnFlash.Text = "⚡ Off";
             }
-            //var modes = new[] { CameraFlashMode.Off, CameraFlashMode.Auto, CameraFlashMode.On };
-            //_flashIndex = (_flashIndex + 1) % modes.Length;
-            //Camera.CameraFlashMode = modes[_flashIndex];
         }
     }
 }

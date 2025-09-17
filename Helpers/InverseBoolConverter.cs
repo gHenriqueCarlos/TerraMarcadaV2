@@ -14,7 +14,7 @@ namespace TerraMarcadaV2.Helpers
             if (value is bool boolValue)
                 return !boolValue;
 
-            return false; // Caso o valor não seja booleano, retorna false
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

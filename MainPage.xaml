@@ -11,12 +11,10 @@
             <local:StringEmptyConverter x:Key="StringEmptyConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
-    
+
     <Grid>
-        <!-- MAPA -->
         <maps:Map x:Name="map" MapType="Satellite"/>
 
-        <!-- Botão flutuante para abrir/fechar o painel -->
         <Grid HorizontalOptions="End"
               VerticalOptions="Start"
               Margin="12"
@@ -29,7 +27,6 @@
                     BackgroundColor="#CC222222"
                     TextColor="White"
                     Clicked="OnTogglePanelClicked" />
-            <!-- Painel -->
             <Border x:Name="ToolPanel"
                     Grid.Row="1"
                     IsVisible="False"
@@ -40,7 +37,6 @@
                     Margin="0,8,0,0">
                 <ScrollView>
                     <VerticalStackLayout Spacing="8">
-                        <!-- ==== CRIAÇÃO (Botão 'Criar' para abrir as opções) ==== -->
                         <Label Text="Criar"
                                FontAttributes="Bold"
                                TextColor="White" />
@@ -49,7 +45,6 @@
                                 BackgroundColor="#2e7d32"
                                 TextColor="White" />
 
-                        <!-- Opções de Criação (sub-menu) -->
                         <StackLayout x:Name="CreationOptions"
                                      IsVisible="False">
                             <Grid ColumnDefinitions="*,*, *"
@@ -118,7 +113,6 @@
                                     TextColor="White" />
                         </StackLayout>
 
-                        <!-- ==== EDIÇÃO (Botão 'Editar' para abrir as opções) ==== -->
                         <Label Text="Editar"
                                FontAttributes="Bold"
                                TextColor="White" />
@@ -127,7 +121,6 @@
                                 BackgroundColor="#ad1457"
                                 TextColor="White" />
 
-                        <!-- Opções de Edição (sub-menu) -->
                         <StackLayout x:Name="EditOptions"
                                      IsVisible="False">
                             <Grid ColumnDefinitions="*,*"
@@ -187,16 +180,13 @@
                                 BackgroundColor="#2e7d32"
                                 TextColor="White" />
 
-                        <!-- Lista de elementos do mapa (inicialmente oculta) -->
                         <StackLayout x:Name="MapElementsList"
                                      IsVisible="False">
                             <Label Text="Selecione um elemento para ir até ele"
                                    TextColor="White" />
 
-                            <!-- Lista de itens (Pins, Polígonos, etc.) -->
                             <ListView x:Name="MapElementsListView"
                                       ItemSelected="OnElementSelected">
-                                <!-- Defina o ItemTemplate conforme os dados que você quer exibir -->
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
@@ -212,7 +202,6 @@
                         </StackLayout>
 
 
-                        <!-- Outras opções -->
                         <Label x:Name="lblStatus"
                                Text="{Binding StatusText}"
                                TextColor="White"
@@ -242,7 +231,6 @@
 
 
         <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="End" Spacing="10">
-            <!-- Label de Área com borda -->
             <Border Stroke="Red"
             BackgroundColor="White"
             Padding="10"
@@ -255,7 +243,6 @@
                x:Name="lblArea"/>
             </Border>
 
-            <!-- Label de Status com borda dinâmica -->
             <Border Stroke="Green"
             BackgroundColor="White"
             Padding="10"

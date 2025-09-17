@@ -21,16 +21,15 @@ namespace TerraMarcadaV2.Helpers
         {
             if (d == null) return;
 
-            // <<< TRATE NULL COMO "NÃO DEFINIDO" >>>
             bool strokeUnset =
                 d.StrokeWidth <= 0f ||
-                d.StrokeColor == null ||                 // <---
-                d.StrokeColor == Colors.Black;           // seu default anterior
+                d.StrokeColor == null ||                
+                d.StrokeColor == Colors.Black;       
 
             bool fillUnset =
-                d.FillColor == null ||                   // <---
+                d.FillColor == null ||                 
                 d.FillColor.Alpha <= 0.02f ||
-                d.FillColor == Colors.Blue;              // seu default anterior
+                d.FillColor == Colors.Blue;             
 
             if (d.StrokeWidth <= 0f)
                 d.StrokeWidth = d.Type == MapDataTypes.Polyline ? 6f : 4f;

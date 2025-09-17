@@ -26,6 +26,7 @@ public class MonoPackageManager_Resources {
 		"Microsoft.Maui.Graphics.dll",
 		"Maui.GoogleMaps.dll",
 		"Maui.GoogleMaps.Clustering.dll",
+		"Plugin.BLE.dll",
 		"SkiaSharp.dll",
 		"SkiaSharp.Views.Android.dll",
 		"SkiaSharp.Views.Maui.Controls.dll",

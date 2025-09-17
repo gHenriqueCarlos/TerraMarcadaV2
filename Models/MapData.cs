@@ -30,13 +30,10 @@ namespace TerraMarcadaV2.Models
 
         public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 
-        // FK para buraco -> polígono pai
+        // polígono pai
         public int? ParentId { get; set; }
 
-        // -------------------------
-        // CORES: armazenar como HEX
-        // -------------------------
-        public string? StrokeColorHex { get; set; }   // ex: #FF00FF00 (A R G B)
+        public string? StrokeColorHex { get; set; }   // #FF00FF00
         public string? FillColorHex { get; set; }
 
         public float StrokeWidth { get; set; } = 5f;
@@ -67,7 +64,7 @@ namespace TerraMarcadaV2.Models
         //public string 
         
         // -------------------------
-        // COORDENADAS: JSON de DTO
+        // # COORDENADAS #
         // -------------------------
         public string Coordinates { get; set; } = "[]";
 
@@ -81,7 +78,6 @@ namespace TerraMarcadaV2.Models
         {
             if (string.IsNullOrWhiteSpace(Coordinates)) return new();
 
-            // 1) caminho feliz: nossa DTO
             try
             {
                 var list = JsonSerializer.Deserialize<List<CoordDto>>(Coordinates);
@@ -90,7 +86,6 @@ namespace TerraMarcadaV2.Models
             }
             catch { /* cai pro fallback */ }
 
-            // 2) fallback: tenta ler objetos { Latitude, Longitude } ou { lat, lng }
             try
             {
                 using var doc = JsonDocument.Parse(Coordinates);
@@ -147,7 +142,6 @@ namespace TerraMarcadaV2.Models
     }
     public static class GeoUtils
     {
-        // Canonicaliza (ordem original; arredondamento fixo) para comparar strings
         public static string Canonicalize(IEnumerable<Position> coords, int decimals = 6)
         {
             var inv = CultureInfo.InvariantCulture;
@@ -157,7 +151,6 @@ namespace TerraMarcadaV2.Models
                     $"{Math.Round(p.Longitude, decimals).ToString($"F{decimals}", inv)}"));
         }
 
-        // “Igualdade” por tolerância métrica ponto a ponto (mesmo tamanho)
         public static bool SequenceAlmostEqual(IList<Position> a, IList<Position> b, double epsMeters = 0.2)
         {
             if (a.Count != b.Count) return false;

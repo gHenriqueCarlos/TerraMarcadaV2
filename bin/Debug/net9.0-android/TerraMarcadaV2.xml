@@ -4,12 +4,6 @@
         <name>TerraMarcadaV2</name>
     </assembly>
     <members>
-        <member name="M:TerraMarcadaV2.Editing.EditManager.StartEditHole(Maui.GoogleMaps.Polygon,System.Int32,TerraMarcadaV2.Models.MapData)">
-            <summary>
-            holeIndex = índice do anel em polygon.Holes (0..n-1)
-            holeData = MapData do buraco (criado ao adicionar o hole, com ParentId preenchido)
-            </summary>
-        </member>
         <member name="T:TerraMarcadaV2.Resource">
             <summary>
             Android Resource Designer class.

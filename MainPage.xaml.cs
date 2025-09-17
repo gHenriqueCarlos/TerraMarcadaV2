@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using TerraMarcadaV2.Creation;
-using TerraMarcadaV2.Editing;   // EditManager
+using TerraMarcadaV2.Editing; 
 using TerraMarcadaV2.Helpers;
 using TerraMarcadaV2.Models;
 using TerraMarcadaV2.Services;
@@ -47,27 +47,27 @@ namespace TerraMarcadaV2
 
         public string StatusText
         {
-            get => lblStatus.Text;  // Retorna o texto atual da primeira label
+            get => lblStatus.Text;  
             set
             {
-                lblStatus.Text = value;   // Atualiza a primeira label
-                lblStatus2.Text = value;  // Atualiza a segunda label automaticamente
+                lblStatus.Text = value;
+                lblStatus2.Text = value;  // Label que fica no fim da tela
             }
         }
 
         public string StatusSizeText
         {
-            get => lblArea.Text;  // Retorna o texto atual da primeira label
+            get => lblArea.Text;  
             set
             {
-                lblArea.Text = value;   // Atualiza a primeira label
-                lblArea.Text = value;  // Atualiza a segunda label automaticamente
+                lblArea.Text = value;   // Label para informar o tamanho da área
+                lblArea.Text = value;  
             }
         }
 
         private void UpdateStatus(string newStatus)
         {
-            StatusText = newStatus; // Isso vai atualizar ambas as labels
+            StatusText = newStatus;
 
             if (string.IsNullOrWhiteSpace(newStatus))
                 BorderLblStatus2.IsVisible = false;
@@ -77,7 +77,7 @@ namespace TerraMarcadaV2
 
         private void UpdateStatusSize(string newStatus)
         {
-            StatusSizeText = newStatus; // Isso vai atualizar ambas as labels
+            StatusSizeText = newStatus; 
             if (string.IsNullOrWhiteSpace(newStatus))
                 BorderLblArea.IsVisible = false;
             else
@@ -107,7 +107,6 @@ namespace TerraMarcadaV2
                 OnStatusSize = s => UpdateStatusSize(s)
             };
 
-            // Clique no mapa: só usamos aqui para seleção/edição quando NÃO estivermos criando
             map.MapClicked += OnMapClickedForSelectionOrHole;
             map.MapLongClicked += OnMapLongClicked;
 
@@ -129,12 +128,9 @@ namespace TerraMarcadaV2
         {
             base.OnAppearing();
 
-            // carrega tudo do DB para o mapa
             await _vm.LoadAllToMapAsync(map);
 
-            // liga cliques em todos os shapes atuais
             _binder.AttachAll(map, OnPolygonShapeClicked, OnPolylineShapeClicked, OnCircleShapeClicked);
-
         }
 
         protected override void OnDisappearing()
@@ -146,7 +142,7 @@ namespace TerraMarcadaV2
         }
 
         // =========================
-        // Destaque / seleção visual
+        // # Destaque / seleção visual #
         // =========================
         private void ClearHighlights()
         {
@@ -195,7 +191,7 @@ namespace TerraMarcadaV2
         }
 
         // =======================================
-        // ============== CRIAÇÃO ================
+        // # CRIAÇÃO #
         // =======================================
         private void OnSnapToggled(object sender, ToggledEventArgs e)
         {
@@ -270,7 +266,6 @@ namespace TerraMarcadaV2
             _selectedPin = e.Pin;
         }
 
-        // Adicionar botão para deletar elementos (no MainPage.xaml)
         private async void OnDeleteSelectedClicked(object sender, EventArgs e)
         {
             if (_create.Active) { UpdateStatus("Finalize ou cancele a criação antes de deletar."); return; }
@@ -309,7 +304,7 @@ namespace TerraMarcadaV2
 
 
         // =======================================
-        // =============== EDIÇÃO =================
+        // # EDIÇÃO #
         // =======================================
         private void OnInsertToggled(object sender, ToggledEventArgs e)
         {
@@ -377,7 +372,7 @@ namespace TerraMarcadaV2
             ClearHighlights();
         }
 
-        // Mostrar as opções de Criação
+        // Menu de Criação
         private void OnCreateClicked(object sender, EventArgs e)
         {
             CreationOptions.IsVisible = !CreationOptions.IsVisible;
@@ -385,7 +380,7 @@ namespace TerraMarcadaV2
             MapElementsList.IsVisible = false;
         }
 
-        // Mostrar as opções de Edição
+        // Menu de Edição
         private void OnEditClicked(object sender, EventArgs e)
         {
             EditOptions.IsVisible = !EditOptions.IsVisible;
@@ -395,13 +390,14 @@ namespace TerraMarcadaV2
 
 
         // =======================================
-        // Clique no mapa: seleção (quando NÃO criando)
+        // # Clique no mapa: seleção (quando NÃO criando) #
         // =======================================
 
         private async void OnMapLongClicked(object sender, MapLongClickedEventArgs e)
 
             {
-                if (_create.Active) return; // criação tem prioridade no clique
+                if (_create.Active) 
+                return; 
 
                 if (_awaitingSelectPolygon)
                 {
@@ -466,7 +462,8 @@ namespace TerraMarcadaV2
             }
         private async void OnMapClickedForSelectionOrHole(object sender, MapClickedEventArgs e)
         {
-            if (_create.Active) return; // criação tem prioridade no clique
+            if (_create.Active) 
+                return;
 
             if (_awaitingSelectPolygon)
             {
@@ -530,9 +527,6 @@ namespace TerraMarcadaV2
             }
         }
 
-        // =======================================
-        // Cliques diretos nos shapes (binder)
-        // =======================================
         private void OnPolygonShapeClicked(Polygon pg)
         {
             if (_create.Active) return;
@@ -567,9 +561,6 @@ namespace TerraMarcadaV2
             UpdateStatus($"Círculo selecionado (raio: {c.Radius.Meters:0} m).");
         }
 
-        // =======================================
-        // Helpers de seleção
-        // =======================================
         private Polygon FindContainingPolygon(Position pt)
         {
             foreach (var polygon in map.Polygons)
@@ -701,12 +692,11 @@ namespace TerraMarcadaV2
             if(MapElementsList.IsVisible) PopulateMapElementsListAsync();
         }
 
-        private readonly List<MapData> mapDataList = new List<MapData>(); // Lista para armazenar os dados do mapa
+        private readonly List<MapData> mapDataList = new List<MapData>(); // Lista para armazenar os dados da lista no menu
 
         
         private async void PopulateMapElementsListAsync()
         {
-            // Limpar a lista de itens antes de preencher
             mapDataList.Clear();
             MapElementsListView.ItemsSource = null;
 
@@ -716,108 +706,108 @@ namespace TerraMarcadaV2
             {
                 if (item.Type == MapDataTypes.Polyline)
                 {
-                    // Calcular a distância da polilinha
                     double DistanceInMeters = GeoMath.CalculatePolylineDistance(item.GetCoordinates());
-
-                    // Adiciona as informações de distância no nome com formatação condicional
                     item.Name += $": Distância: {DistanceInMeters:F2} m";
                 }
                 else if (item.Type == MapDataTypes.Polygon)
                 {
-                    // Calcular a área do polígono
                     double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(item.GetCoordinates());
-
-                    // Adiciona as informações de área no nome
                     item.Name += $": Área: {GeoMath.FormatAreaHa(AreaInMetersSquared)} hectares, m² {AreaInMetersSquared:F2}";
                 }
                 else if (item.Type == MapDataTypes.Circle)
                 {
-                    // Calcular a área do polígono
                     double AreaInMetersSquared = GeoMath.ComputePolygonAreaSquareMeters(item.GetCoordinates());
-
-                    // Adiciona as informações de área no nome
                     item.Name += $": Raio: {item.Radius} m";
                 }
 
-                mapDataList.Add(item); // Adicionar cada item à lista
+                mapDataList.Add(item);
             }
-
-            // Atualizar o ItemsSource da ListView com os dados da lista
             MapElementsListView.ItemsSource = mapDataList;
-
-            // Limpar a seleção após a atualização dos itens
             MapElementsListView.SelectedItem = null;
-
-            // Exibir a lista (tornando-a visível)
             MapElementsList.IsVisible = true;
         }
 
-        // Evento chamado quando um item da lista é selecionado
         private async void OnElementSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            // Verifica se a lista está vazia
             if (mapDataList.Count == 0)
             {
                 await DisplayAlert("Atenção", "A lista de elementos está vazia. Por favor, recarregue a lista.", "OK");
                 return;
             }
 
-            // Verifica se nenhum item foi selecionado
             if (e.SelectedItem == null)
             {
-                return; // Nenhum item selecionado
+                return; 
             }
 
-            // Verifica se o item selecionado é válido
             var selectedItem = e.SelectedItem as MapData;
 
-            // Garantir que o item está na lista antes de tentar utilizá-lo
             if (selectedItem != null && mapDataList.Contains(selectedItem))
             {
-                // Foca o mapa na posição do elemento selecionado
                 var position = selectedItem.GetCoordinates().FirstOrDefault();
                 if (position != null)
                 {
-                    map.FocusOn(position, 500); // Centraliza o mapa no elemento selecionado
+                    map.FocusOn(position, 500); 
                 }
             }
             else
             {
-                // Caso o item selecionado não esteja mais na lista, desmarcar a seleção
                 MapElementsListView.SelectedItem = null;
             }
         }
 
-
         private async void OnConfigClicked(object sender, EventArgs e)
         {
+
+            //TileLayer objTile = null;
+
+            //if (objTile != null) map.TileLayers.Remove(objTile);
+            //objTile = TileLayer.FromTileUri((int x, int y, int zoom) =>
+            //    new Uri($"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}"));
+
+            //map.TileLayers.Add(objTile);
+
+            //currentDisable.IsEnabled = true;
+            //currentDisable = (Button)sender;
+            //currentDisable.IsEnabled = false;
+            //map.MapType = MapType.None;  // Defina o tipo de mapa
+
+            //Button currentDisable = buttonRemove;
+            //buttonRemove.IsEnabled = false;
+            //if (objTile != null) map.TileLayers.Remove(objTile);
+            //TileLayer objTile = null;
+            //objTile = TileLayer.FromTileUri((int x, int y, int zoom) =>
+            //    new Uri($"https://tile.openstreetmap.org/{zoom}/{x}/{y}.png"));
+            //objTile.Tag = "OSMTILE"; // Can set any object
+            //map.TileLayers.Add(objTile);
+            //map.MapType = MapType.None;
             // Mostrar display com algumas configurações simples
 
-            var pickedCat = await DisplayActionSheet("Ir para…", "Cancelar", null, "Alterar Estilo do Mapa\n");
+            //var pickedCat = await DisplayActionSheet("Ir para…", "Cancelar", null, "Alterar Estilo do Mapa\n");
 
-            if(pickedCat == "Alterar Estilo do Mapa")
-            {
-                var style = await DisplayActionSheet("Estilo do Mapa", "Cancelar", null, "Normal", "Satélite", "Terreno", "Híbrido");
+            //if(pickedCat == "Alterar Estilo do Mapa")
+            //{
+            //    var style = await DisplayActionSheet("Estilo do Mapa", "Cancelar", null, "Normal", "Satélite", "Terreno", "Híbrido");
 
-                if(style == "Normal")
-                {
-                    map.MapType = MapType.Street;
-                }
-                else if(style == "Satélite")
-                {
-                    map.MapType = MapType.Satellite;
-                }
-                else if(style == "Terreno")
-                {
-                    map.MapType = MapType.Terrain;
-                }
-                else if(style == "Híbrido")
-                {
-                    map.MapType = MapType.Hybrid;
-                }else map.MapType = MapType.Satellite;
+            //    if(style == "Normal")
+            //    {
+            //        map.MapType = MapType.Street;
+            //    }
+            //    else if(style == "Satélite")
+            //    {
+            //        map.MapType = MapType.Satellite;
+            //    }
+            //    else if(style == "Terreno")
+            //    {
+            //        map.MapType = MapType.Terrain;
+            //    }
+            //    else if(style == "Híbrido")
+            //    {
+            //        map.MapType = MapType.Hybrid;
+            //    }else map.MapType = MapType.Satellite;
 
-                return;
-            }
+            //    return;
+            //}
 
         }
         private async void OnImportKMLClicked(object sender, EventArgs e)

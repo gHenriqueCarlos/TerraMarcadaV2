@@ -18,11 +18,6 @@
      Route="Mapa" />
 
     <ShellContent
-     Title="Coletora GNSS"
-     ContentTemplate="{DataTemplate local:GnssPage}"
-     Route="ColetoraGnss" />
-
-    <ShellContent
      Title="GeoCamera"
      ContentTemplate="{DataTemplate local:GeoCamera}"
      Route="GeoCamera" />

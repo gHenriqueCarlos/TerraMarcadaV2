@@ -5,7 +5,6 @@
              x:Class="TerraMarcadaV2.Views.GeoCamera"
              Title="GeoCamera" BackgroundColor="Black">
     <Grid>
-        <!-- Preview da câmera -->
         <toolkit:CameraView x:Name="Camera"
                             HorizontalOptions="Fill"
                             VerticalOptions="Fill" >
@@ -14,7 +13,6 @@
             </toolkit:CameraView.GestureRecognizers>
         </toolkit:CameraView>
 
-        <!-- HUD -->
         <Grid Padding="16"
               RowDefinitions="Auto,*"
               ColumnDefinitions="*">
@@ -39,7 +37,6 @@
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Botões de controle -->
             <HorizontalStackLayout Grid.Row="1"
                                    Spacing="12"
                                    HorizontalOptions="Center"
@@ -67,7 +64,6 @@
                         TextColor="White"
                         Clicked="ToggleFlash_Clicked" x:Name="BtnFlash" />
 
-                <!-- ActivityIndicator para mostrar enquanto a foto é capturada -->
                 <ActivityIndicator x:Name="CaptureIndicator" 
                                    IsRunning="False" 
                                    IsVisible="False" 

@@ -19,11 +19,10 @@ namespace TerraMarcadaV2.Helpers
                 var end = coordinates[i + 1];
                 totalDistance += Location.CalculateDistance(start.Latitude, start.Longitude, end.Latitude, end.Longitude, DistanceUnits.Kilometers);
             }
-            return totalDistance * 1000; // Convertendo para metros
+            return totalDistance * 1000;
         }
         public static double ComputePolygonAreaSquareMeters(List<Position> coordinates)
         {
-            // Projeção local (equiretangular) + fórmula do polígono (shoelace)
             if (coordinates == null || coordinates.Count < 3) return 0;
 
             double lat0Deg = coordinates.Average(v => v.Latitude);
@@ -34,7 +33,6 @@ namespace TerraMarcadaV2.Helpers
             double mPerLat = 111132.954 - 559.822 * Math.Cos(2 * lat0Rad) + 1.175 * Math.Cos(4 * lat0Rad);
             double mPerLon = 111132.954 * Math.Cos(lat0Rad);
 
-            // para precisão, use o anel como está (não precisa repetir o 1º no final)
             var pts = coordinates.Select(v => (
                 x: (v.Longitude - lon0Deg) * mPerLon,
                 y: (v.Latitude - lat0Deg) * mPerLat
