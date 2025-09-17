@@ -8,9 +8,7 @@
 
 		<meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBikk1CUzHGvaT4d8uPby3Gy67gBCCuIFA" />
-
-		
+            android:value="@string/google_maps_api_key" />
 
 		<!-- Intent filter para abrir arquivos .kml -->
 		<activity

@@ -7,6 +7,7 @@ using TerraMarcadaV2.Services;
 using TerraMarcadaV2.ViewModels;
 using TerraMarcadaV2.Views;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using Microsoft.Extensions.Configuration;
 namespace TerraMarcadaV2
 {
     public static class MauiProgram
@@ -40,8 +41,7 @@ namespace TerraMarcadaV2
 #if ANDROID
             builder.UseGoogleMaps();
 #elif IOS
-            //builder.UseGoogleMaps(Variables.GOOGLE_MAPS_IOS_API_KEY);
-            builder.UseGoogleMaps("AIzaSyBikk1CUzHGvaT4d8uPby3Gy67gBCCuIFA");
+            builder.UseGoogleMaps("your_api_key");
 #endif
 
             builder.UseGoogleMapsClustering();
@@ -49,7 +49,6 @@ namespace TerraMarcadaV2
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-
 
             var app = builder.Build();
 
